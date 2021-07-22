@@ -35,23 +35,31 @@ AppAsset::register($this);
             'class' => 'navbar-inverse navbar-fixed-top',
         ],
     ]);
+
+    $items = [];
+
+    if (Yii::$app->user->isSuperadmin) {
+        $items [] = ['label' => 'Пользователи', 'url' => ['/user/index']];
+    }
+
+    $items[] = Yii::$app->user->isGuest ? (
+    ['label' => 'Login', 'url' => ['/parts/login']]
+    ) : (
+        '<li>'
+        . Html::beginForm(['/parts/logout'], 'post')
+        . Html::submitButton(
+            'Logout (' . Yii::$app->user->identity->username . ')',
+            ['class' => 'btn btn-link logout']
+        )
+        . Html::endForm()
+        . '</li>'
+    );
+
     echo Nav::widget([
         'options' => ['class' => 'navbar-nav navbar-right'],
-        'items' => [
-            Yii::$app->user->isGuest ? (
-                ['label' => 'Login', 'url' => ['/main/login']]
-            ) : (
-                '<li>'
-                . Html::beginForm(['/main/logout'], 'post')
-                . Html::submitButton(
-                    'Logout (' . Yii::$app->user->identity->username . ')',
-                    ['class' => 'btn btn-link logout']
-                )
-                . Html::endForm()
-                . '</li>'
-            )
-        ],
+        'items' => $items,
     ]);
+
     NavBar::end();
     ?>
 
@@ -66,7 +74,7 @@ AppAsset::register($this);
 
 <footer class="footer">
     <div class="container">
-        <p class="pull-left">&copy; Valles <?= date('Y') ?></p>
+        <p class="pull-left">&copy; Auto Alliance <?= date('Y') ?></p>
         <p class="pull-right"><?= Yii::powered() ?></p>
     </div>
 </footer>
